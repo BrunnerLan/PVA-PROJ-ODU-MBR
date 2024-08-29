@@ -59,6 +59,30 @@ services:
       timeout: 30s
       retries: 5
       start_period: 0s
+    networks:
+      - PvsNetwork
+
+  mongo2:
+    image: mongo:7.0
+    container_name: mongo2
+    restart: always
+    ports:
+      - 27018:27018
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27018"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - "./mongo2_data:/data/db"
+      - "./mongo2_config:/data/configdb"
+    healthcheck:
+      test: >
+        echo "rs.isMaster()" | mongosh --port 27018 --quiet
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 0s
+    networks:
+      - PvsNetwork
 
 networks:
  PvsNetwork:

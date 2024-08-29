@@ -1,3 +1,5 @@
 .env
 mongo1_config
 mongo1_data
+mongo2_config
+mongo2_data
