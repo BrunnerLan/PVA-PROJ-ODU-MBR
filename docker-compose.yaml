@@ -8,6 +8,30 @@ services:
       TICKER_INTERVAL: "${TICKER_INTERVAL}"
     env_file:
       - .env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - PvsNetwork
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 0s
     networks:
       - PvsNetwork
 
