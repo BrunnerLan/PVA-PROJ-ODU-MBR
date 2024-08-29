@@ -1,0 +1,16 @@
+services:  
+  stock-publisher:
+    image: manuelbrunner/stock-publisher:v1.0
+    container_name: stock-publisher
+    restart: always
+    environment:
+      RABBITMQ_URL: "${RABBITMQ_URL}"
+      TICKER_INTERVAL: "${TICKER_INTERVAL}"
+    env_file:
+      - .env
+    networks:
+      - PvsNetwork
+
+networks:
+ PvsNetwork:
+   driver: bridge
