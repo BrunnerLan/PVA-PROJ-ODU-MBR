@@ -189,7 +189,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./lib/nginx.conf/etc/nginx/nginx.conf
+      - ./lb/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - stock-liveview1
       - stock-liveview2
