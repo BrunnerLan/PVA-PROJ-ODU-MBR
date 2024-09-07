@@ -35,53 +35,53 @@ services:
     networks:
       - PvsNetwork
 
-stock-consumer-tesla:
-  image: manuelbrunner/stock-consumer:v1.0
-  container_name: stock-consumer-TSLA
-  restart: always
-  environment:
-    RABBITMQ_URL: "${RABBITMQ_URL}"
-    MONGODB_URL: "${MONGODB_URL}"
-    MONGODB_DB: "${MONGODB_DB}"
-    MONGODB_COLLECTION: "${MONGODB_COLLECTION}"
-    QUEUE_NAME: "TSLA"
-  extra_hosts:
-    - "host.docker.internal:host-gateway"
-  depends_on:
-    rabbitmq:
-      condition: service_healthy
-    mongo1:
-      condition: service_healthy
-    mongo2:
-      condition: service_started
-    mongo3:
-      condition: service_started
-  networks:
-    - PvsNetwork
+  stock-consumer-tesla:
+    image: manuelbrunner/stock-consumer:v1.0
+    container_name: stock-consumer-TSLA
+    restart: always
+    environment:
+      RABBITMQ_URL: "${RABBITMQ_URL}"
+      MONGODB_URL: "${MONGODB_URL}"
+      MONGODB_DB: "${MONGODB_DB}"
+      MONGODB_COLLECTION: "${MONGODB_COLLECTION}"
+      QUEUE_NAME: "TSLA"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo1:
+        condition: service_healthy
+      mongo2:
+        condition: service_started
+      mongo3:
+        condition: service_started
+    networks:
+      - PvsNetwork
 
-stock-consumer-apple:
-  image: manuelbrunner/stock-consumer:v1.0
-  container_name: stock-consumer-AAPL
-  restart: always
-  environment:
-    RABBITMQ_URL: "${RABBITMQ_URL}"
-    MONGODB_URL: "${MONGODB_URL}"
-    MONGODB_DB: "${MONGODB_DB}"
-    MONGODB_COLLECTION: "${MONGODB_COLLECTION}"
-    QUEUE_NAME: "AAPL"
-  extra_hosts:
-    - "host.docker.internal:host-gateway"
-  depends_on:
-    rabbitmq:
-      condition: service_healthy
-    mongo1:
-      condition: service_healthy
-    mongo2:
-      condition: service_started
-    mongo3:
-      condition: service_started
-  networks:
-    - PvsNetwork
+  stock-consumer-apple:
+    image: manuelbrunner/stock-consumer:v1.0
+    container_name: stock-consumer-AAPL
+    restart: always
+    environment:
+      RABBITMQ_URL: "${RABBITMQ_URL}"
+      MONGODB_URL: "${MONGODB_URL}"
+      MONGODB_DB: "${MONGODB_DB}"
+      MONGODB_COLLECTION: "${MONGODB_COLLECTION}"
+      QUEUE_NAME: "AAPL"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo1:
+        condition: service_healthy
+      mongo2:
+        condition: service_started
+      mongo3:
+        condition: service_started
+    networks:
+      - PvsNetwork
 
   stock-consumer-microsoft:
     image: manuelbrunner/stock-consumer:v1.0
@@ -123,8 +123,8 @@ stock-consumer-apple:
       test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'host.docker.internal:27017',priority:1},{_id:1,host:'host.docker.internal:27018',priority:0.5},{_id:2,host:'host.docker.internal:27019',priority:0.5}]}) }" | mongosh --port 27017 --quiet
       interval: 5s
       timeout: 30s
-      retries: 5
       start_period: 0s
+      start_interval: 1s
     networks:
       - PvsNetwork
 
@@ -140,13 +140,6 @@ stock-consumer-apple:
     volumes:
       - "./mongo2_data:/data/db"
       - "./mongo2_config:/data/configdb"
-    healthcheck:
-      test: >
-        echo "rs.isMaster()" | mongosh --port 27018 --quiet
-      interval: 5s
-      timeout: 30s
-      retries: 5
-      start_period: 0s
     networks:
       - PvsNetwork
 
@@ -162,13 +155,6 @@ stock-consumer-apple:
     volumes:
       - "./mongo3_data:/data/db"
       - "./mongo3_config:/data/configdb"
-    healthcheck:
-      test: >
-        echo "rs.isMaster()" | mongosh --port 27019 --quiet
-      interval: 5s
-      timeout: 30s
-      retries: 5
-      start_period: 0s
     networks:
       - PvsNetwork
 
@@ -193,6 +179,20 @@ stock-consumer-apple:
       MONGODB_URL: "${MONGODB_URL}"
       MONGODB_DB: "${MONGODB_DB}"
       MONGODB_COLLECTION: "${MONGODB_COLLECTION}"
+    networks:
+      - PvsNetwork
+
+  nginx-load-balancer:
+    image: nginx:1.27.1
+    container_name: nginx-load-balancer
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./lib/nginx.conf/etc/nginx/nginx.conf
+    depends_on:
+      - stock-liveview1
+      - stock-liveview2
     networks:
       - PvsNetwork
 
