@@ -1,4 +1,4 @@
-services:  
+services:
   stock-publisher:
     image: manuelbrunner/stock-publisher:v1.0
     container_name: stock-publisher
@@ -35,11 +35,77 @@ services:
     networks:
       - PvsNetwork
 
-# - > stock-consumer-aapl:
+stock-consumer-tesla:
+  image: manuelbrunner/stock-consumer:v1.0
+  container_name: stock-consumer-TSLA
+  restart: always
+  environment:
+    RABBITMQ_URL: "${RABBITMQ_URL}"
+    MONGODB_URL: "${MONGODB_URL}"
+    MONGODB_DB: "${MONGODB_DB}"
+    MONGODB_COLLECTION: "${MONGODB_COLLECTION}"
+    QUEUE_NAME: "TSLA"
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    rabbitmq:
+      condition: service_healthy
+    mongo1:
+      condition: service_healthy
+    mongo2:
+      condition: service_started
+    mongo3:
+      condition: service_started
+  networks:
+    - PvsNetwork
 
-# - > stock-consumer-msft:
+stock-consumer-apple:
+  image: manuelbrunner/stock-consumer:v1.0
+  container_name: stock-consumer-AAPL
+  restart: always
+  environment:
+    RABBITMQ_URL: "${RABBITMQ_URL}"
+    MONGODB_URL: "${MONGODB_URL}"
+    MONGODB_DB: "${MONGODB_DB}"
+    MONGODB_COLLECTION: "${MONGODB_COLLECTION}"
+    QUEUE_NAME: "AAPL"
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    rabbitmq:
+      condition: service_healthy
+    mongo1:
+      condition: service_healthy
+    mongo2:
+      condition: service_started
+    mongo3:
+      condition: service_started
+  networks:
+    - PvsNetwork
 
-# - > stock-consumer-tsla:
+  stock-consumer-microsoft:
+    image: manuelbrunner/stock-consumer:v1.0
+    container_name: stock-consumer-MSFT
+    restart: always
+    environment:
+      RABBITMQ_URL: "${RABBITMQ_URL}"
+      MONGODB_URL: "${MONGODB_URL}"
+      MONGODB_DB: "${MONGODB_DB}"
+      MONGODB_COLLECTION: "${MONGODB_COLLECTION}"
+      QUEUE_NAME: "MSFT"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo1:
+        condition: service_healthy
+      mongo2:
+        condition: service_started
+      mongo3:
+        condition: service_started
+    networks:
+      - PvsNetwork
 
   mongo1:
     image: mongo:7.0
@@ -47,7 +113,7 @@ services:
     restart: always
     ports:
       - 27017:27017
-    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "27017" ]
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -68,7 +134,7 @@ services:
     restart: always
     ports:
       - 27018:27018
-    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27018"]
+    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "27018" ]
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -90,7 +156,7 @@ services:
     restart: always
     ports:
       - 27019:27019
-    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27019"]
+    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "27019" ]
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -107,5 +173,5 @@ services:
       - PvsNetwork
 
 networks:
- PvsNetwork:
-   driver: bridge
+  PvsNetwork:
+    driver: bridge
