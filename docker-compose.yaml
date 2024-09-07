@@ -172,6 +172,30 @@ stock-consumer-apple:
     networks:
       - PvsNetwork
 
+  stock-liveview1:
+    image: manuelbrunner/stock-liveview:v1.0
+    container_name: stock-liveview1
+    ports:
+      - "3000:3000"
+    environment:
+      MONGODB_URL: "${MONGODB_URL}"
+      MONGODB_DB: "${MONGODB_DB}"
+      MONGODB_COLLECTION: "${MONGODB_COLLECTION}"
+    networks:
+      - PvsNetwork
+
+  stock-liveview2:
+    image: manuelbrunner/stock-liveview:v1.0
+    container_name: stock-liveview2
+    ports:
+      - "3001:3000"
+    environment:
+      MONGODB_URL: "${MONGODB_URL}"
+      MONGODB_DB: "${MONGODB_DB}"
+      MONGODB_COLLECTION: "${MONGODB_COLLECTION}"
+    networks:
+      - PvsNetwork
+
 networks:
   PvsNetwork:
     driver: bridge
